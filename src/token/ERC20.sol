@@ -15,14 +15,6 @@ struct ERC20Storage {
 }
 
 library ERC20Lib {
-    /**
-     * @dev Indicates an error related to the current `balance` of a `sender`. Used in transfers.
-     * @param sender Address whose tokens are being transferred.
-     * @param balance Current balance for the interacting account.
-     * @param needed Minimum amount required to perform a transfer.
-     */
-    error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
-
     function balanceOf(ERC20Storage storage self, address account) internal view returns (uint256) {
         return self.balances.get(account);
     }
@@ -31,8 +23,17 @@ library ERC20Lib {
         return self.allowances.get(owner, spender);
     }
 
+    function approve(ERC20Storage storage self, address spender, uint256 value) internal {
+        _approve(self, msg.sender, spender, value);
+    }
+
     function transfer(ERC20Storage storage self, address to, uint256 value) internal {
         _transfer(self, msg.sender, to, value);
+    }
+
+    function transferFrom(ERC20Storage storage self, address from, address to, uint256 value) internal {
+        _spendAllowance(self, from, msg.sender, value);
+        _transfer(self, from, to, value);
     }
 
     function _transfer(ERC20Storage storage self, address from, address to, uint256 value) private {
@@ -86,5 +87,25 @@ library ERC20Lib {
             self.totalSupply -= value;
         }
         _deductBalance(self, account, value);
+    }
+
+    function _approve(ERC20Storage storage self, address owner, address spender, uint256 value) internal {
+        self.allowances.set(owner, spender, value);
+    }
+
+    function _spendAllowance(ERC20Storage storage self, address owner, address spender, uint256 value) internal {
+        uint256 slot = self.allowances.slot(owner, spender);
+        uint256 currentAllowance;
+        assembly {
+            currentAllowance := sload(slot)
+        }
+        if (currentAllowance != type(uint256).max) {
+            if (currentAllowance < value) {
+                revert IERC20Errors.ERC20InsufficientAllowance(spender, currentAllowance, value);
+            }
+            assembly {
+                sstore(slot, sub(currentAllowance, value))
+            }
+        }
     }
 }
