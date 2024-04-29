@@ -1,0 +1,26 @@
+{
+  "name": "solitude",
+  "description": "Solitude is a suite of Solidity primitives for building smart contracts using encapsulation and composition, rather than inheritance.",
+  "version": "0.0.1",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "solady": "^0.0.193"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "ethereum",
+    "solidity",
+    "smart-contracts"
+  ],
+  "scripts": {
+    "clean": "forge clean",
+    "build": "forge build",
+    "lint": "forge fmt --check",
+    "lint:fix": "forge fmt",
+    "snapshot": "forge snapshot --isolate",
+    "snapshot:diff": "forge snapshot --diff --isolate",
+    "test": "forge test",
+    "test:coverage": "forge coverage"
+  }
+}
