@@ -3,8 +3,8 @@ pragma solidity ^0.8.19;
 
 import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-import {AllowanceMap} from "../primitive/AllowanceMap.sol";
-import {BalanceMap} from "../primitive/BalanceMap.sol";
+import {AllowanceMap} from "./AllowanceMap.sol";
+import {BalanceMap} from "./BalanceMap.sol";
 
 using ERC20Lib for ERC20Storage global;
 
