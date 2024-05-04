@@ -1,111 +1,70 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { IERC20Metadata } from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
-import {AllowanceMap} from "../primitive/AllowanceMap.sol";
-import {BalanceMap} from "../primitive/BalanceMap.sol";
+import { ERC20Storage } from "../primitive/ERC20.sol";
 
-using ERC20Lib for ERC20Storage global;
+contract ERC20 is IERC20, IERC20Metadata {
+    ERC20Storage internal _storage;
 
-struct ERC20Storage {
-    BalanceMap balances;
-    AllowanceMap allowances;
-    uint256 totalSupply;
-}
+    string private _name;
+    string private _symbol;
 
-library ERC20Lib {
-    function balanceOf(ERC20Storage storage self, address account) internal view returns (uint256) {
-        return self.balances.get(account);
+    constructor(string memory name_, string memory symbol_) {
+        _name = name_;
+        _symbol = symbol_;
     }
 
-    function allowance(ERC20Storage storage self, address owner, address spender) internal view returns (uint256) {
-        return self.allowances.get(owner, spender);
+    /// @inheritdoc IERC20Metadata
+    function name() public view virtual returns (string memory) {
+        return _name;
     }
 
-    function approve(ERC20Storage storage self, address spender, uint256 value) internal {
-        _approve(self, msg.sender, spender, value);
+    /// @inheritdoc IERC20Metadata
+    function symbol() public view virtual returns (string memory) {
+        return _symbol;
     }
 
-    function transfer(ERC20Storage storage self, address to, uint256 value) internal {
-        _transfer(self, msg.sender, to, value);
+    /// @inheritdoc IERC20Metadata
+    function decimals() public view virtual returns (uint8) {
+        return 18;
     }
 
-    function transferFrom(ERC20Storage storage self, address from, address to, uint256 value) internal {
-        _spendAllowance(self, from, msg.sender, value);
-        _transfer(self, from, to, value);
+    /// @inheritdoc IERC20
+    function totalSupply() public view virtual returns (uint256) {
+        return _storage.totalSupply;
     }
 
-    function _transfer(ERC20Storage storage self, address from, address to, uint256 value) private {
-        _update(self, from, to, value);
+    /// @inheritdoc IERC20
+    function balanceOf(address account) public view virtual returns (uint256) {
+        return _storage.balanceOf(account);
     }
 
-    function _update(ERC20Storage storage self, address from, address to, uint256 value) private {
-        _deductBalance(self, from, value);
-        _increaseBalance(self, to, value);
+    /// @inheritdoc IERC20
+    function allowance(address owner, address spender) public view virtual returns (uint256) {
+        return _storage.allowance(owner, spender);
     }
 
-    function _deductBalance(ERC20Storage storage self, address from, uint256 value) private {
-        uint256 fromSlot = self.balances.slot(from);
-        uint256 fromBalance;
-        assembly {
-            fromBalance := sload(fromSlot)
-        }
-        if (fromBalance < value) {
-            revert IERC20Errors.ERC20InsufficientBalance(from, fromBalance, value);
-        }
-        assembly {
-            // Overflow not possible: value <= fromBalance <= totalSupply.
-            sstore(fromSlot, sub(fromBalance, value))
-        }
+    /// @inheritdoc IERC20
+    function approve(address spender, uint256 value) public virtual returns (bool) {
+        _storage.approve(spender, value);
+        emit Approval(msg.sender, spender, value);
+        return true;
     }
 
-    function _increaseBalance(ERC20Storage storage self, address to, uint256 value) private {
-        uint256 toSlot = self.balances.slot(to);
-        assembly {
-            // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
-            let toBalanceBefore := sload(toSlot)
-            sstore(toSlot, add(toBalanceBefore, value))
-        }
+    /// @inheritdoc IERC20
+    function transfer(address to, uint256 value) public virtual returns (bool) {
+        _storage.transfer(to, value);
+        emit Transfer(msg.sender, to, value);
+        return true;
     }
 
-    function _mint(ERC20Storage storage self, address account, uint256 value) internal {
-        if (account == address(0)) {
-            revert IERC20Errors.ERC20InvalidReceiver(address(0));
-        }
-        // Overflow check required: The rest of the code assumes that totalSupply never overflows
-        self.totalSupply += value;
-        _increaseBalance(self, account, value);
-    }
-
-    function _burn(ERC20Storage storage self, address account, uint256 value) internal {
-        if (account == address(0)) {
-            revert IERC20Errors.ERC20InvalidSender(address(0));
-        }
-        unchecked {
-            // Overflow not possible: value <= totalSupply or value <= fromBalance <= totalSupply.
-            self.totalSupply -= value;
-        }
-        _deductBalance(self, account, value);
-    }
-
-    function _approve(ERC20Storage storage self, address owner, address spender, uint256 value) internal {
-        self.allowances.set(owner, spender, value);
-    }
-
-    function _spendAllowance(ERC20Storage storage self, address owner, address spender, uint256 value) internal {
-        uint256 slot = self.allowances.slot(owner, spender);
-        uint256 currentAllowance;
-        assembly {
-            currentAllowance := sload(slot)
-        }
-        if (currentAllowance != type(uint256).max) {
-            if (currentAllowance < value) {
-                revert IERC20Errors.ERC20InsufficientAllowance(spender, currentAllowance, value);
-            }
-            assembly {
-                sstore(slot, sub(currentAllowance, value))
-            }
-        }
+    /// @inheritdoc IERC20
+    function transferFrom(address from, address to, uint256 value) public virtual returns (bool) {
+        _storage.transferFrom(from, to, value);
+        emit Transfer(from, to, value);
+        return true;
     }
 }
