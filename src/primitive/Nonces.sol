@@ -9,7 +9,8 @@ struct NonceMap {
 }
 
 /// @dev Provides tracking nonces for addresses. Nonces will only increment.
-/// @notice Modified from OpenZeppelin Contracts v5.0.0 [utils/Nonces.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/utils/Nonces.sol).
+/// @notice Modified from OpenZeppelin Contracts v5.0.0
+/// [utils/Nonces.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/utils/Nonces.sol).
 library Nonces {
     /// @dev The nonce used for an `account` is not the expected current nonce.
     error InvalidAccountNonce(address account, uint256 currentNonce);
@@ -33,7 +34,8 @@ library Nonces {
     /// @dev Consumes a nonce.
     function useNonce(NonceMap storage self, address owner) internal returns (uint256 nonce) {
         uint256 _slot = slot(self, owner);
-        // For each account, the nonce has an initial value of 0, can only be incremented by one, and cannot be
+        // For each account, the nonce has an initial value of 0, can only be incremented by one,
+        // and cannot be
         // decremented or reset. This guarantees that the nonce never overflows.
         assembly ("memory-safe") {
             nonce := sload(_slot)

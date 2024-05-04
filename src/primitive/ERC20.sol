@@ -146,7 +146,8 @@ library ERC20Lib {
     function _increaseBalance(ERC20Storage storage self, address to, uint256 value) private {
         uint256 toSlot = self.balances.slot(to);
         assembly {
-            // Overflow not possible: balance + value is at most totalSupply, which we know fits into a uint256.
+            // Overflow not possible: balance + value is at most totalSupply, which we know fits
+            // into a uint256.
             let toBalanceBefore := sload(toSlot)
             sstore(toSlot, add(toBalanceBefore, value))
         }
