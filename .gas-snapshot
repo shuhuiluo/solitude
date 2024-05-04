@@ -1,0 +1,8 @@
+ERC20Test:testApprove() (gas: 57445)
+ERC20Test:testBurn() (gas: 105809)
+ERC20Test:testInfiniteApproveTransferFrom() (gas: 170402)
+ERC20Test:testMetadata() (gas: 13958)
+ERC20Test:testMint() (gas: 73366)
+ERC20Test:testTransfer() (gas: 121755)
+ERC20Test:testTransferFrom() (gas: 165843)
+ERC20Test:test__codesize() (gas: 10027)

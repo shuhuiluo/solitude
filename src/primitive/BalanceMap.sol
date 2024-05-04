@@ -16,7 +16,14 @@ library BalanceLib {
         }
     }
 
-    function get(BalanceMap storage self, address account) internal view returns (uint256 _balance) {
+    function get(
+        BalanceMap storage self,
+        address account
+    )
+        internal
+        view
+        returns (uint256 _balance)
+    {
         uint256 _slot = self.slot(account);
         assembly ("memory-safe") {
             _balance := sload(_slot)

@@ -8,7 +8,15 @@ struct AllowanceMap {
 }
 
 library AllowanceLib {
-    function slot(AllowanceMap storage self, address account, address spender) internal pure returns (uint256 _slot) {
+    function slot(
+        AllowanceMap storage self,
+        address account,
+        address spender
+    )
+        internal
+        pure
+        returns (uint256 _slot)
+    {
         assembly ("memory-safe") {
             mstore(0, account)
             mstore(0x20, self.slot)
@@ -18,7 +26,11 @@ library AllowanceLib {
         }
     }
 
-    function get(AllowanceMap storage self, address account, address spender)
+    function get(
+        AllowanceMap storage self,
+        address account,
+        address spender
+    )
         internal
         view
         returns (uint256 allowance)
@@ -29,7 +41,14 @@ library AllowanceLib {
         }
     }
 
-    function set(AllowanceMap storage self, address account, address spender, uint256 allowance) internal {
+    function set(
+        AllowanceMap storage self,
+        address account,
+        address spender,
+        uint256 allowance
+    )
+        internal
+    {
         uint256 _slot = self.slot(account, spender);
         assembly ("memory-safe") {
             sstore(_slot, allowance)

@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {SoladyTest} from "solady/test/utils/SoladyTest.sol";
+import { SoladyTest } from "solady/test/utils/SoladyTest.sol";
 
-import {ERC20} from "../../src/token/ERC20.sol";
+import { ERC20 } from "../../src/token/ERC20.sol";
 
 contract MockERC20 is ERC20 {
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {}
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) { }
 
     function mint(address to, uint256 value) public {
-        _storage._mint(to, value);
+        _storage.mint(to, value);
     }
 
     function burn(address from, uint256 value) public {
-        _storage._burn(from, value);
+        _storage.burn(from, value);
     }
 }
 
