@@ -60,7 +60,6 @@ library ERC20Permit {
         bytes32 s
     )
         internal
-        returns (bool)
     {
         if (block.timestamp > deadline) {
             revert ERC2612ExpiredSignature(deadline);
@@ -75,7 +74,9 @@ library ERC20Permit {
         bytes32 hash = self.eip712.hashTypedDataV4(structHash);
 
         address signer = ECDSA.recover(hash, v, r, s);
-        return signer == owner;
+        if (signer != owner) {
+            revert ERC2612InvalidSigner(signer, owner);
+        }
     }
 
     /// @dev Returns the current nonce for `owner`.

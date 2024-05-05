@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IERC20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 import { AllowanceMap } from "./AllowanceMap.sol";
@@ -39,11 +40,11 @@ library ERC20Lib {
     }
 
     function approve(ERC20Storage storage self, address spender, uint256 value) internal {
-        approve(self, msg.sender, spender, value);
+        self.approve(msg.sender, spender, value);
     }
 
     function transfer(ERC20Storage storage self, address to, uint256 value) internal {
-        _transfer(self, msg.sender, to, value);
+        self.transfer(msg.sender, to, value);
     }
 
     function transferFrom(
@@ -55,7 +56,7 @@ library ERC20Lib {
         internal
     {
         self.spendAllowance(from, msg.sender, value);
-        _transfer(self, from, to, value);
+        self.transfer(from, to, value);
     }
 
     function mint(ERC20Storage storage self, address account, uint256 value) internal {
@@ -65,6 +66,7 @@ library ERC20Lib {
         // Overflow check required: The rest of the code assumes that totalSupply never overflows
         self.totalSupply += value;
         _increaseBalance(self, account, value);
+        emit IERC20.Transfer(address(0), account, value);
     }
 
     function burn(ERC20Storage storage self, address account, uint256 value) internal {
@@ -76,6 +78,7 @@ library ERC20Lib {
             self.totalSupply -= value;
         }
         _deductBalance(self, account, value);
+        emit IERC20.Transfer(account, address(0), value);
     }
 
     function approve(
@@ -87,6 +90,7 @@ library ERC20Lib {
         internal
     {
         self.allowances.set(owner, spender, value);
+        emit IERC20.Approval(owner, spender, value);
     }
 
     function spendAllowance(
@@ -112,15 +116,16 @@ library ERC20Lib {
         }
     }
 
-    function _transfer(
+    function transfer(
         ERC20Storage storage self,
         address from,
         address to,
         uint256 value
     )
-        private
+        internal
     {
         _update(self, from, to, value);
+        emit IERC20.Transfer(from, to, value);
     }
 
     function _update(ERC20Storage storage self, address from, address to, uint256 value) private {
