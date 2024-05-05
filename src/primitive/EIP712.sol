@@ -93,8 +93,7 @@ library EIP712Lib {
 
     /**
      * @dev Given an already https://eips.ethereum.org/EIPS/eip-712#definition-of-hashstruct[hashed
-     * struct], this
-     * function returns the hash of the fully encoded EIP712 message for this domain.
+     * struct], this function returns the hash of the fully encoded EIP712 message for this domain.
      *
      * This hash can be used together with {ECDSA-recover} to obtain the signer of a message. For
      * example:

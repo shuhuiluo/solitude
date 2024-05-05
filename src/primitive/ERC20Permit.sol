@@ -16,7 +16,8 @@ struct ERC20PermitStorage {
 }
 
 /// @dev ERC20 Permit library.
-/// @notice Modified from OpenZeppelin Contracts v5.0.0 [token/ERC20/extensions/ERC20Permit.sol]()
+/// @notice Modified from OpenZeppelin Contracts v5.0.0
+/// [token/ERC20/extensions/ERC20Permit.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/extensions/ERC20Permit.sol)
 library ERC20Permit {
     using ShortStrings for string;
 
@@ -47,7 +48,7 @@ library ERC20Permit {
         eip712.cacheDomainSeparator();
     }
 
-    /// @dev Sets `value` as the allowance of `spender` over ``owner``'s tokens, given ``owner``'s
+    /// @dev Sets `value` as the allowance of `spender` over `owner`'s tokens, given `owner`'s
     /// signed approval.
     function permit(
         ERC20PermitStorage storage self,

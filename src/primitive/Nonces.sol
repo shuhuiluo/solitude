@@ -35,8 +35,7 @@ library Nonces {
     function useNonce(NonceMap storage self, address owner) internal returns (uint256 nonce) {
         uint256 _slot = slot(self, owner);
         // For each account, the nonce has an initial value of 0, can only be incremented by one,
-        // and cannot be
-        // decremented or reset. This guarantees that the nonce never overflows.
+        // and cannot be decremented or reset. This guarantees that the nonce never overflows.
         assembly ("memory-safe") {
             nonce := sload(_slot)
             sstore(_slot, add(nonce, 1))
